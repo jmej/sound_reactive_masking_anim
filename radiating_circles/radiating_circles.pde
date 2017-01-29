@@ -11,7 +11,7 @@ int xPos=50;
 void setup(){
   size(640, 351);
   frameRate(30);
-  bg = loadImage("Nike_floorplan.jpg");
+  bg = loadImage("floorplan.jpg");
   print("setup complete");
 
 }
