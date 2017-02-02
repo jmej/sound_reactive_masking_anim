@@ -1,16 +1,16 @@
 PImage bg;
 int seqCounter;
 int[] sizes = { 
-  80, 40, 20, 10, 0
+  300, 250, 200, 150, 100, 50
 };
-int xoffset = 80;
+int xoffset = 300;
 int yoffset = 0;
 
 int xPos=50;
 
 void setup(){
-  size(640, 351);
-  frameRate(24);
+  size(2872, 1574);
+  frameRate(30);
   bg = loadImage("floorplan.jpg");
   print("setup complete");
 
@@ -18,12 +18,12 @@ void setup(){
 
 float sizeBasedAlpha(int size){
   float alpha = 0.0;
-  if (size <= 60){
+  if (size <= 250){
       alpha = 255.0;
       //alpha = map(size, 0, 60, 0, 255);
     }
-    if (size > 60){
-      alpha = map(size, 60, 80, 255, 0);
+    if (size > 150){
+      alpha = map(size, 150, 300, 255, 0);
     }
     return alpha;
 }
@@ -35,7 +35,7 @@ void makeRow(int size, int rowNumber){
     strokeWeight(1);
     alpha = sizeBasedAlpha(size);
     stroke(3, 171, 255, alpha);
-    ellipse (xoffset+(n*100), yoffset+(rowNumber*100), size, size);
+    ellipse (xoffset+(n*600), yoffset+(rowNumber*300), size, size);
   }
 }
 
@@ -53,7 +53,7 @@ void makeRowMasking(int size, int rowNumber){
       alpha = sizeBasedAlpha(size);
       stroke(3, 171, 255, alpha);
     }
-    ellipse (xoffset+(n*100), yoffset+(rowNumber*100), size, size);
+    ellipse (xoffset+(n*600), yoffset+(rowNumber*300), size, size);
   }
 }
 
@@ -83,10 +83,9 @@ void draw(){
       makeRow(sizes[i], 1);
       makeRow(sizes[i], 2);
       makeRow(sizes[i], 3);
-      makeRow(sizes[i], 4);
-      sizes[i] += 2;
+      sizes[i] += 1;
       //draw a circle using x as the height and width of the circle
-      if(sizes[i] > 80) {
+      if(sizes[i] > 300) {
         sizes[i] = 0;
       }
     }
@@ -99,10 +98,9 @@ void draw(){
       makeRow(sizes[i], 1);
       makeRow(sizes[i], 2);
       makeRow(sizes[i], 3);
-      makeRow(sizes[i], 4);
-      sizes[i] += 2;
+      sizes[i] += 1;
       //draw a circle using x as the height and width of the circle
-      if(sizes[i] > 80) {
+      if(sizes[i] >= 300) {
         sizes[i] = 0;
       }
     }
@@ -114,10 +112,9 @@ void draw(){
       makeRowMasking(sizes[i], 1);
       makeRowMasking(sizes[i], 2);
       makeRowMasking(sizes[i], 3);
-      makeRowMasking(sizes[i], 4);
-      sizes[i] += 2;
+      sizes[i] += 1;
       //draw a circle using x as the height and width of the circle
-      if(sizes[i] > 80) {
+      if(sizes[i] > 300) {
         sizes[i] = 0;
       }
     }
@@ -131,10 +128,9 @@ void draw(){
       makeRow(sizes[i], 1);
       makeRow(sizes[i], 2);
       makeRow(sizes[i], 3);
-      makeRow(sizes[i], 4);
-      sizes[i] += 2;
+      sizes[i] += 1;
       //draw a circle using x as the height and width of the circle
-      if(sizes[i] > 80) {
+      if(sizes[i] > 300) {
         sizes[i] = 0;
       }
     }
