@@ -17,12 +17,11 @@ void setup(){
   for (int s = 0; s < 6; s++){
     sizes[s] = maxSize-sizeOffset*s;
   }
-  xoffset = width / 13.05; //why isn't this the same as width * 0.1305? (which == 374ish)
+  //xoffset = width / 13.05; //why isn't this the same as width * 0.1305? (which == 374ish)
+  xoffset = maxSize*1.15;
+  yoffset = maxSize*0.55;
   //bg = loadImage("floorplan.jpg");
   bg = loadImage("floorplan_lowres.jpg");
-  
-  print("xoffset is "+xoffset);
-  print("setup complete");
 
 }
 
@@ -72,7 +71,7 @@ void makeConversation(float size){
   strokeWeight(4);
   alpha = sizeBasedAlpha(size);
   stroke(255, 87, 3, alpha);
-  ellipse(xoffset+maxSize*4.5, (3*maxSize)-(maxSize*0.5), size, size);
+  ellipse(xoffset+maxSize*4.5, yoffset+(3*maxSize)-(maxSize*0.5), size, size);
 }
 
 void draw(){
@@ -96,7 +95,7 @@ void draw(){
       makeRow(sizes[i], 2);
       makeRow(sizes[i], 3);
       makeRow(sizes[i], 4);
-      sizes[i] += 1;
+      sizes[i] += 0.5;
       //draw a circle using x as the height and width of the circle
       if(sizes[i] > maxSize) {
         sizes[i] = 0;
@@ -112,7 +111,7 @@ void draw(){
       makeRow(sizes[i], 2);
       makeRow(sizes[i], 3);
       makeRow(sizes[i], 4);
-      sizes[i] += 1;
+      sizes[i] += 0.5;
       //draw a circle using x as the height and width of the circle
       if(sizes[i] >= maxSize) {
         sizes[i] = 0;
@@ -127,7 +126,7 @@ void draw(){
       makeRowMasking(sizes[i], 2);
       makeRowMasking(sizes[i], 3);
       makeRowMasking(sizes[i], 4);
-      sizes[i] += 1;
+      sizes[i] += 0.5;
       //draw a circle using x as the height and width of the circle
       if(sizes[i] > maxSize) {
         sizes[i] = 0;
