@@ -3,7 +3,7 @@ int seqCounter;
 int frameCount;
 float maxSize;
 float sizeOffset;
-float[] sizes =  new float[6];
+float[] sizes = new float[6];
 int xPos=150;
 float xoffset = 0;
 float yoffset = 0;
@@ -17,7 +17,6 @@ void setup(){
   for (int s = 0; s < 6; s++){
     sizes[s] = maxSize-sizeOffset*s;
   }
-  //xoffset = width / 13.05; //why isn't this the same as width * 0.1305? (which == 374ish)
   xoffset = maxSize*1.15;
   yoffset = maxSize*0.55;
   //bg = loadImage("floorplan.jpg");
@@ -28,13 +27,13 @@ void setup(){
 float sizeBasedAlpha(float size){
   float alpha = 0.0;
   if (size <= maxSize){
-      alpha = 255.0;
-      //alpha = map(size, 0, 60, 0, 255);
+    alpha = 255.0;
+    //alpha = map(size, 0, 60, 0, 255);
+   }
+   if (size > (maxSize/2)){
+     alpha = map(size, maxSize/2, maxSize, 255, 0);
     }
-    if (size > (maxSize/2)){
-      alpha = map(size, maxSize/2, maxSize, 255, 0);
-    }
-    return alpha;
+  return alpha;
 }
 
 void makeRow(float size, int rowNumber){
@@ -75,30 +74,47 @@ void makeConversation(float size){
 }
 
 void draw(){
-  if (frameCount < 120){
-    seqCounter = 0;
-    frameCount++;
-  }else{
-  seqCounter = (frameCount/120) % 5; //7 steps, 4 seconds each
-  frameCount++;
+  if (frameCount == 600){
+    frameCount = 0;
   }
-  //print(seqCounter);
-  background(bg);
-  //background(255);
+  if (frameCount < 120){
+     seqCounter = 0;
+     frameCount++;
+     }else{
+     seqCounter = (frameCount/120) % 5; //5 steps, 4 seconds each
+     frameCount++;
+   }
+   //print(seqCounter);
+   background(bg);
+   //background(255);
   
   //phase 1
   if ((seqCounter == 0) || (seqCounter == 1)){
     xPos=50;
-    for (int i = 0; i < sizes.length; i++){
-      // make size a little bit bigger
-      makeRow(sizes[i], 1);
-      makeRow(sizes[i], 2);
-      makeRow(sizes[i], 3);
-      makeRow(sizes[i], 4);
-      sizes[i] += 0.5;
-      //draw a circle using x as the height and width of the circle
-      if(sizes[i] > maxSize) {
-        sizes[i] = 0;
+    //sizes start at 0. only the first circle gets drawn first frame. second circle gets drawn when sizes[0] == sizeOffset
+    //need to figure out how many frames that takes - probably 120. Every 120 frames another circle is drawn until they're in rotation
+    if (frameCount < 90){ //if we're in the first two seconds of phase (at which point all circles get made)
+      int firstFew = (frameCount/15) % 6;//iterate on frameCount/15 % 6 (6 half second iterations)
+      for (int i = 0; i < firstFew; i++){
+        makeRow(sizes[i], 1);
+        makeRow(sizes[i], 2);
+        makeRow(sizes[i], 3);
+        makeRow(sizes[i], 4);
+        sizes[i] += 0.5;
+        if(sizes[i] > maxSize) {
+          sizes[i] = 0;
+        }
+      }
+    }else{
+      for (int i = 0; i < sizes.length; i++){
+        makeRow(sizes[i], 1);
+        makeRow(sizes[i], 2);
+        makeRow(sizes[i], 3);
+        makeRow(sizes[i], 4);
+        sizes[i] += 0.5;
+        if(sizes[i] > maxSize) {
+          sizes[i] = 0;
+        }
       }
     }
   }
@@ -112,7 +128,6 @@ void draw(){
       makeRow(sizes[i], 3);
       makeRow(sizes[i], 4);
       sizes[i] += 0.5;
-      //draw a circle using x as the height and width of the circle
       if(sizes[i] >= maxSize) {
         sizes[i] = 0;
       }
@@ -120,19 +135,18 @@ void draw(){
   }
     //phase 3  
     if ((seqCounter == 3) || (seqCounter == 4)){
-    for (int i = 0; i < sizes.length; i++){
-      makeConversation(sizes[i]);
-      makeRowMasking(sizes[i], 1);
-      makeRowMasking(sizes[i], 2);
-      makeRowMasking(sizes[i], 3);
-      makeRowMasking(sizes[i], 4);
-      sizes[i] += 0.5;
-      //draw a circle using x as the height and width of the circle
-      if(sizes[i] > maxSize) {
-        sizes[i] = 0;
+      for (int i = 0; i < sizes.length; i++){
+        makeConversation(sizes[i]);
+        makeRowMasking(sizes[i], 1);
+        makeRowMasking(sizes[i], 2);
+        makeRowMasking(sizes[i], 3);
+        makeRowMasking(sizes[i], 4);
+        sizes[i] += 0.5;
+        if(sizes[i] > maxSize) {
+          sizes[i] = 0;
+        }
       }
     }
-  }
   
   //saveFrame();
   //phase 4 - noon sounds
