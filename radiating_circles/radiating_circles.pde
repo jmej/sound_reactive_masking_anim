@@ -1,46 +1,55 @@
 PImage bg;
 int seqCounter;
 int frameCount;
-int[] sizes = { 
-  300, 250, 200, 150, 100, 50
-};
-int xoffset = 220;
-int yoffset = 0;
-
+float maxSize;
+float sizeOffset;
+float[] sizes =  new float[6];
 int xPos=150;
+float xoffset = 0;
+float yoffset = 0;
 
 void setup(){
-  size(2872, 1574);
+  //size(2872, 1574);
+  size(1436, 787); //low res version
   frameRate(30);
-  bg = loadImage("floorplan.jpg");
+  maxSize = width * 0.0957;
+  sizeOffset = maxSize / 6;
+  for (int s = 0; s < 6; s++){
+    sizes[s] = maxSize-sizeOffset*s;
+  }
+  xoffset = width / 13.05; //why isn't this the same as width * 0.1305? (which == 374ish)
+  //bg = loadImage("floorplan.jpg");
+  bg = loadImage("floorplan_lowres.jpg");
+  
+  print("xoffset is "+xoffset);
   print("setup complete");
 
 }
 
-float sizeBasedAlpha(int size){
+float sizeBasedAlpha(float size){
   float alpha = 0.0;
-  if (size <= 250){
+  if (size <= maxSize){
       alpha = 255.0;
       //alpha = map(size, 0, 60, 0, 255);
     }
-    if (size > 150){
-      alpha = map(size, 150, 300, 255, 0);
+    if (size > (maxSize/2)){
+      alpha = map(size, maxSize/2, maxSize, 255, 0);
     }
     return alpha;
 }
 
-void makeRow(int size, int rowNumber){
+void makeRow(float size, int rowNumber){
   float alpha = 0.0;
   noFill();
   for (int n = 0; n < 9; n++){
     strokeWeight(2);
     alpha = sizeBasedAlpha(size);
     stroke(3, 171, 255, alpha);
-    ellipse (xoffset+(n*300), yoffset+(rowNumber*300), size, size);
+    ellipse (xoffset+(n*maxSize), yoffset+(rowNumber*maxSize), size, size);
   }
 }
 
-void makeRowMasking(int size, int rowNumber){
+void makeRowMasking(float size, int rowNumber){
   float alpha = 0.0;
   noFill();
   for (int n = 0; n < 9; n++){
@@ -54,16 +63,16 @@ void makeRowMasking(int size, int rowNumber){
       alpha = sizeBasedAlpha(size);
       stroke(3, 171, 255, alpha);
     }
-    ellipse (xoffset+(n*300), yoffset+(rowNumber*300), size, size);
+    ellipse (xoffset+(n*maxSize), yoffset+(rowNumber*maxSize), size, size);
   }
 }
 
-void makeConversation(int size){
+void makeConversation(float size){
   float alpha = 0.0;
   strokeWeight(4);
   alpha = sizeBasedAlpha(size);
   stroke(255, 87, 3, alpha);
-  ellipse(1570, height*0.5, size, size);
+  ellipse(xoffset+maxSize*4.5, (3*maxSize)-(maxSize*0.5), size, size);
 }
 
 void draw(){
@@ -89,7 +98,7 @@ void draw(){
       makeRow(sizes[i], 4);
       sizes[i] += 1;
       //draw a circle using x as the height and width of the circle
-      if(sizes[i] > 300) {
+      if(sizes[i] > maxSize) {
         sizes[i] = 0;
       }
     }
@@ -105,7 +114,7 @@ void draw(){
       makeRow(sizes[i], 4);
       sizes[i] += 1;
       //draw a circle using x as the height and width of the circle
-      if(sizes[i] >= 300) {
+      if(sizes[i] >= maxSize) {
         sizes[i] = 0;
       }
     }
@@ -120,7 +129,7 @@ void draw(){
       makeRowMasking(sizes[i], 4);
       sizes[i] += 1;
       //draw a circle using x as the height and width of the circle
-      if(sizes[i] > 300) {
+      if(sizes[i] > maxSize) {
         sizes[i] = 0;
       }
     }
