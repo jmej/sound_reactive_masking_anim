@@ -4,6 +4,8 @@ int frameCount;
 float maxSize;
 float sizeOffset;
 float[] sizes = new float[6];
+float[] convoSizes = new float[6];
+float[] maskingSizes = new float[6];
 int xPos=150;
 float xoffset = 0;
 float yoffset = 0;
@@ -14,9 +16,6 @@ void setup(){
   frameRate(30);
   maxSize = width * 0.0957;
   sizeOffset = maxSize / 6;
-  for (int s = 0; s < 6; s++){
-    sizes[s] = maxSize-sizeOffset*s;
-  }
   xoffset = maxSize*1.15;
   yoffset = maxSize*0.55;
   //bg = loadImage("floorplan.jpg");
@@ -49,15 +48,25 @@ void makeRow(float size, int rowNumber){
 
 void makeRowMasking(float size, int rowNumber){
   float alpha = 0.0;
+  float alphaSized;
   noFill();
   for (int n = 0; n < 9; n++){
     if ((n>2) && (n<7)){
       strokeWeight(4);
-      alpha = sizeBasedAlpha(size);
+      alphaSized = sizeBasedAlpha(size);
+      if (frameCount > 500){
+        if (frameCount > 625){
+          alpha = 0;
+        }else{
+          alpha = map(frameCount, 500, 625, alphaSized, 0.0);
+        }
+      }else{
+        alpha = alphaSized;
+      }
       stroke(3, 171, 255, alpha);
     }
     else{
-      strokeWeight(2);
+      strokeWeight(0);
       alpha = sizeBasedAlpha(size);
       stroke(3, 171, 255, alpha);
     }
@@ -67,88 +76,116 @@ void makeRowMasking(float size, int rowNumber){
 
 void makeConversation(float size){
   float alpha = 0.0;
+  float alphaSized;
   strokeWeight(4);
-  alpha = sizeBasedAlpha(size);
+  alphaSized = sizeBasedAlpha(size);
+    if (frameCount > 500){
+      if (frameCount > 600){
+        alpha = 0;
+      }else{
+        alpha = map(frameCount, 500, 600, alphaSized, 0.0);
+      }
+    }else{
+      alpha = alphaSized;
+    }
   stroke(255, 87, 3, alpha);
   ellipse(xoffset+maxSize*4.5, yoffset+(3*maxSize)-(maxSize*0.5), size, size);
 }
 
 void draw(){
-  if (frameCount == 600){
+  if (frameCount == 1080){ // 120 frames * 9 steps
     frameCount = 0;
   }
   if (frameCount < 120){
      seqCounter = 0;
      frameCount++;
      }else{
-     seqCounter = (frameCount/120) % 5; //5 steps, 4 seconds each
+     seqCounter = (frameCount/120) % 9; //9 steps, 4 seconds each
      frameCount++;
    }
-   //print(seqCounter);
+   println(frameCount);
+   println(seqCounter);
    background(bg);
    //background(255);
   
   //phase 1
-  if ((seqCounter == 0) || (seqCounter == 1)){
-    xPos=50;
-    //sizes start at 0. only the first circle gets drawn first frame. second circle gets drawn when sizes[0] == sizeOffset
-    //need to figure out how many frames that takes - probably 120. Every 120 frames another circle is drawn until they're in rotation
-    if (frameCount < 90){ //if we're in the first two seconds of phase (at which point all circles get made)
-      int firstFew = (frameCount/15) % 6;//iterate on frameCount/15 % 6 (6 half second iterations)
-      for (int i = 0; i < firstFew; i++){
-        makeRow(sizes[i], 1);
-        makeRow(sizes[i], 2);
-        makeRow(sizes[i], 3);
-        makeRow(sizes[i], 4);
-        sizes[i] += 0.5;
-        if(sizes[i] > maxSize) {
-          sizes[i] = 0;
-        }
-      }
+  if (frameCount == 1){
+    for (int s = 0; s < 6; s++){
+      sizes[s] = (maxSize-sizeOffset*s) - (maxSize-sizeOffset*s)*2;
+    }
+  }
+
+  xPos=50;
+  for (int i = 0; i < sizes.length; i++){
+    float sizeToDisplay = 0; //trick to get a delay on the first handful of circles (which otherwise start with negative sizes)
+    if (sizes[i] < 0){
+      sizeToDisplay = 0;
     }else{
-      for (int i = 0; i < sizes.length; i++){
-        makeRow(sizes[i], 1);
-        makeRow(sizes[i], 2);
-        makeRow(sizes[i], 3);
-        makeRow(sizes[i], 4);
-        sizes[i] += 0.5;
-        if(sizes[i] > maxSize) {
-          sizes[i] = 0;
-        }
+      sizeToDisplay = sizes[i];
+    }
+    makeRow(sizeToDisplay, 1);
+    makeRow(sizeToDisplay, 2);
+    makeRow(sizeToDisplay, 3);
+    makeRow(sizeToDisplay, 4);
+    sizes[i] += 0.5;
+    if(sizes[i] > maxSize) {
+      if (frameCount < 800){
+        sizes[i] = 0;
+      }
+    }
+    convoSizes[i] += 0.5;
+    if(convoSizes[i] > maxSize) {
+      if (frameCount < 400){
+        convoSizes[i] = 0;
       }
     }
   }
   
   //phase 2
-  if (seqCounter == 2){
-    for (int i = 0; i < sizes.length; i++){
-      makeConversation(sizes[i]);
-      makeRow(sizes[i], 1);
-      makeRow(sizes[i], 2);
-      makeRow(sizes[i], 3);
-      makeRow(sizes[i], 4);
-      sizes[i] += 0.5;
-      if(sizes[i] >= maxSize) {
-        sizes[i] = 0;
-      }
+  if (frameCount == 241){
+    for (int s = 0; s < 6; s++){
+      convoSizes[s] = (maxSize-sizeOffset*s) - (maxSize-sizeOffset*s)*2;
     }
   }
-    //phase 3  
-    if ((seqCounter == 3) || (seqCounter == 4)){
-      for (int i = 0; i < sizes.length; i++){
-        makeConversation(sizes[i]);
-        makeRowMasking(sizes[i], 1);
-        makeRowMasking(sizes[i], 2);
-        makeRowMasking(sizes[i], 3);
-        makeRowMasking(sizes[i], 4);
-        sizes[i] += 0.5;
-        if(sizes[i] > maxSize) {
-          sizes[i] = 0;
+  if (seqCounter > 1){
+    for (int i = 0; i < convoSizes.length; i++){
+      float sizeToDisplay = 0; //trick to get a delay on the first handful of circles (which otherwise start with negative sizes)
+      if (convoSizes[i] < 0){
+        sizeToDisplay = 0;
+      }else{
+        sizeToDisplay = convoSizes[i];
+      }
+      makeConversation(sizeToDisplay);
+    }
+  }
+   //phase 3
+    if (frameCount == 280){
+      for (int s = 0; s < 6; s++){
+        maskingSizes[s] = (maxSize-sizeOffset*s) - (maxSize-sizeOffset*s)*2;
+      }
+    }
+    if (frameCount > 280){
+      for (int i = 0; i < maskingSizes.length; i++){
+        float sizeToDisplay = 0; //trick to get a delay on the first handful of circles (which otherwise start with negative sizes)
+        if (maskingSizes[i] < 0){
+          sizeToDisplay = 0;
+        }else{
+          sizeToDisplay = maskingSizes[i];
         }
+          makeRowMasking(sizeToDisplay, 1);
+          makeRowMasking(sizeToDisplay, 2);
+          makeRowMasking(sizeToDisplay, 3);
+          makeRowMasking(sizeToDisplay, 4);
+          maskingSizes[i] += 0.5;
+          if(maskingSizes[i] > maxSize) {
+            if (frameCount < 300){
+              maskingSizes[i] = 0;
+            }
+          }
       }
     }
   
-  //saveFrame();
+  saveFrame();
   //phase 4 - noon sounds
    //if ((seqCounter == 5) || (seqCounter == 6)){
    // for (int i = 0; i < sizes.length; i++){
